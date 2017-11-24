@@ -15,6 +15,10 @@ module Appsignal
           alias process_without_appsignal process
 
           def process(commands, &block)
+            sanitized_commands = commands.map do |command, *args|
+              "#{command}#{args.map { |_| ' ?'}.join}"
+            end.join("\n")
+
             Appsignal.instrument "query.redis" do
               process_without_appsignal(commands, &block)
             end
