@@ -730,6 +730,10 @@ module Appsignal
       config && config.active? && extension_loaded?
     end
 
+    def whitelist_actions
+      config && config[:whitelist_actions]
+    end
+
     # @deprecated No replacement
     def is_ignored_error?(error) # rubocop:disable Style/PredicateName
       Appsignal.config[:ignore_errors].include?(error.class.name)

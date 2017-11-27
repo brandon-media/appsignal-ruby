@@ -19,6 +19,15 @@ module Appsignal
       end
 
       def call_with_appsignal_monitoring(env)
+        whitelist = Appsignal.whitelist_actions
+        return @app.call(env) unless whitelist
+
+        controller = env["action_controller.instance"]
+        return @app.call(env) unless controller
+
+        action = "#{controller.class}##{controller.action_name}"
+        return @app.call(env) unless whitelist.include?(action)
+
         request = ActionDispatch::Request.new(env)
         transaction = Appsignal::Transaction.create(
           request_id(env),
