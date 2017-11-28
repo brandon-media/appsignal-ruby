@@ -15,6 +15,8 @@ module Appsignal
           def execute(*args)
             execute_without_appsignal(*args)
           rescue Exception => error # rubocop:disable Lint/RescueException
+            whitelist = Appsignal.whitelist_actions.presence
+            raise error if !whitelist || !whitelist.include?(name)
             # Format given arguments and cast to hash if possible
             params, _ = args
             params = params.to_hash if params.respond_to?(:to_hash)
