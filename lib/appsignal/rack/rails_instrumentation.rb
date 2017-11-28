@@ -19,14 +19,7 @@ module Appsignal
       end
 
       def call_with_appsignal_monitoring(env)
-        whitelist = Appsignal.whitelist_actions
-        return @app.call(env) unless whitelist
-
-        controller = env["action_controller.instance"]
-        return @app.call(env) unless controller
-
-        action = "#{controller.class}##{controller.action_name}"
-        return @app.call(env) unless whitelist.include?(action)
+        whitelist = Appsignal.whitelist_actions.presence
 
         request = ActionDispatch::Request.new(env)
         transaction = Appsignal::Transaction.create(
@@ -43,7 +36,11 @@ module Appsignal
         ensure
           controller = env["action_controller.instance"]
           if controller
-            transaction.set_action_if_nil("#{controller.class}##{controller.action_name}")
+            action = "#{controller.class}##{controller.action_name}"
+            transaction.set_action_if_nil(action)
+            transaction.discard! if !whitelist || !whitelist.include?(action)
+          else
+            transaction.discard!
           end
           transaction.set_http_or_background_queue_start
           transaction.set_metadata("path", request.path)

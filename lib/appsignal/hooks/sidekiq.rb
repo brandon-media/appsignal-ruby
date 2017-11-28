@@ -28,7 +28,7 @@ module Appsignal
       ).freeze
 
       def call(_worker, item, _queue)
-        whitelist = Appsignal.whitelist_actions
+        whitelist = Appsignal.whitelist_actions.presence
         return yield unless whitelist
         return yield unless whitelist.include?(formatted_action_name(item))
 
