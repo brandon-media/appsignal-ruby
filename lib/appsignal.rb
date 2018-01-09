@@ -129,6 +129,7 @@ module Appsignal
           end
 
           Appsignal::Minutely.start if config[:enable_minutely_probes]
+          Appsignal::Heartbeat.start
         else
           logger.info("Not starting, not active for #{config.env}")
         end
@@ -790,6 +791,7 @@ require "appsignal/event_formatter"
 require "appsignal/hooks"
 require "appsignal/marker"
 require "appsignal/minutely"
+require "appsignal/heartbeat"
 require "appsignal/garbage_collection_profiler"
 require "appsignal/integrations/railtie" if defined?(::Rails)
 require "appsignal/integrations/resque"
