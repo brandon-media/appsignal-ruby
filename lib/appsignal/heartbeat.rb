@@ -24,7 +24,7 @@ module Appsignal
       end
 
       def wait_time
-        2 * 60
+        4 * 60 * 60
       end
     end
   end
